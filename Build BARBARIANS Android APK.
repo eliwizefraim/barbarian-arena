@@ -1,0 +1,56 @@
+
+name: Build BARBARIANS Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build BARBARIANS APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check project files
+        run: |
+          echo "Checking BARBARIANS project..."
+          test -f package.json || {
+            echo "ERROR: package.json not found"
+            exit 1
+          }
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install EAS CLI
+        run: npm install --global eas-cli
+
+      - name: Configure APK profile
+        run: |
+          cat > eas.json <<'EOF'
+          {
+            "cli": {
+              "appVersionSource": "remote"
+            },
+            "build": {
+              "preview": {
+                "distribution": "internal",
+                "android": {
+                  "buildType": "apk"
+                }
+              }
+            }
+          }
+          EOF
+
+      - name: Build BARBARIANS Android APK
+        run: eas build --platform android --profile preview --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
