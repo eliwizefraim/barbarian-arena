@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="0.7"
+        android:scaleY="0.7">
+        <!-- Barbarian Helmet / Crest Shield -->
+        <!-- Center Shield -->
+        <path
+            android:fillColor="#E53935"
+            android:pathData="M54,20 L84,32 L84,62 C84,80 54,92 54,92 C54,92 24,80 24,62 L24,32 Z" />
+        <path
+            android:fillColor="#B71C1C"
+            android:pathData="M54,20 L84,32 L84,62 C84,80 54,92 54,92 L54,20 Z" />
+        <!-- Horns / Spikes -->
+        <path
+            android:fillColor="#FFD54F"
+            android:pathData="M30,36 C18,24 14,8 14,8 C14,8 26,12 36,24 Z" />
+        <path
+            android:fillColor="#FFB300"
+            android:pathData="M78,36 C90,24 94,8 94,8 C94,8 82,12 72,24 Z" />
+        <!-- Golden Trim & Emblem -->
+        <path
+            android:fillColor="#FFD54F"
+            android:pathData="M54,34 L66,54 L54,74 L42,54 Z" />
+        <path
+            android:fillColor="#FFF"
+            android:pathData="M54,42 L60,54 L54,66 L48,54 Z" />
+    </group>
+</vector>

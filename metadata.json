@@ -1,0 +1,6 @@
+{
+  "name": "Barbarian Arena",
+  "description": "Barbarian Arena Android app featuring warrior roster, battle arena, combat simulation, and stats tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
