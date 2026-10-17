@@ -1,0 +1,51 @@
+name: Build and upload APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and upload debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          api-level: 36
+          build-tools: '36.0.0'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew || true
+
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
+
+      - name: List APK output
+        run: ls -l app/build/outputs/apk/debug || true
+
+      - name: Create GitHub Release and upload APK
+        uses: ncipollo/release-action@v1
+        with:
+          tag: apk-build-${{ github.run_id }}
+          name: APK Build ${{ github.run_id }}
+          files: app/build/outputs/apk/debug/app-debug.apk
