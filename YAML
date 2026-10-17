@@ -1,78 +1,49 @@
-name: Android CI
+
+name: Build BARBARIANS Android APK
 
 on:
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: 'Which build to run (debug or release)'
-        required: true
-        default: 'debug'
-  push:
-    branches: [ main, master ]
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
-          cache: 'gradle'
 
-      - name: Install Android SDK command-line tools and platform
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build APK
         run: |
-          set -e
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
-          ANDROID_HOME=$HOME/Android/Sdk
-          mkdir -p $ANDROID_HOME/cmdline-tools
-          cd $HOME
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline.zip
-          unzip -q cmdline.zip -d cmdline-tools-temp
-          mkdir -p $ANDROID_HOME/cmdline-tools/latest
-          mv cmdline-tools-temp/cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-          yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses >/dev/null
-          sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+          if [ -f ./gradlew ]; then
+            chmod +x ./gradlew
+            ./gradlew assembleDebug
+          elif [ -f ./android/gradlew ]; then
+            cd android
+            chmod +x ./gradlew
+            ./gradlew assembleDebug
+          else
+            echo "ERROR: Gradle Android project not found."
+            exit 1
+          fi
 
-      - name: Build debug APK
-        run: |
-          chmod +x ./gradlew || true
-          ./gradlew :app:assembleDebug --no-daemon --stacktrace
-
-      - name: Upload debug APK artifact
+      - name: Upload BARBARIANS APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Build release APK
-        if: ${{ github.event.inputs.build_type == 'release' }}
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          set -e
-          echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
-          chmod +x ./gradlew || true
-          ./gradlew :app:assembleRelease \
-            -Pandroid.injected.signing.store.file=$(pwd)/release.keystore \
-            -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
-            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
-            -Pandroid.injected.signing.key.password="$KEY_PASSWORD" \
-            --no-daemon --stacktrace
-
-      - name: Upload release APK artifact
-        if: ${{ github.event.inputs.build_type == 'release' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-apk
-          path: app/build/outputs/apk/release/*.apk
+          name: BARBARIANS-debug-apk
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
