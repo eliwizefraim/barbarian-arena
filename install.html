@@ -1,10 +1,18 @@
-<!doctype html>
-<html lang="sw">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Install App (APK)</title>
-  <style>
+<button id="download-btn">Pakua APK</button>
+
+<script>
+  // Badilisha hii na direct download link ya APK yako
+  const apkUrl = "https://github.com/eliwizefraim/barbarian-arena/releases/download/v1.0.0/BarbarianArena.apk";
+
+  // Optional: link to the GitHub release page
+  const releasePage = "https://github.com/eliwizefraim/barbarian-arena/releases/tag/v1.0.0";
+
+  document.getElementById("download-btn").addEventListener("click", () => {
+    window.location.href = apkUrl;
+    // Alternative:
+    // window.open(releasePage, "_blank");
+  });
+</script>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; padding: 2rem; background:#f7f9fc; color:#0b2135; }
     .card { max-width:720px; margin:0 auto; background:white; padding:1.5rem; border-radius:8px; box-shadow:0 6px 20px rgba(16,24,40,0.06); }
     h1 { margin-top:0; }
